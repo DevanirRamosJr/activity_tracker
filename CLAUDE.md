@@ -42,6 +42,7 @@ If a change makes a test obsolete, update it — don't delete coverage. Pure log
 - **Commit messages** follow [Conventional Commits](https://www.conventionalcommits.org/):
   `feat: add image search`, `fix: handle empty categories`, `chore: add Dockerfile`, etc.
   Use a scope when it adds clarity: `feat(auth): add change-password flow`.
+  Keep the first line **under 25 words** — brief and to the point.
 
 ## Conventions
 
