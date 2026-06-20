@@ -5,8 +5,8 @@ export const SORT_OPTIONS = [
   { value: 'z-a', label: 'Z → A' },
   { value: 'updated', label: 'Atualizados' },
   { value: 'status', label: 'Status' },
-  { value: 'my-desire', label: 'Meu desejo' },
-  { value: 'avg-desire', label: 'Desejo médio' },
+  { value: 'my-desire', label: 'Minha vontade' },
+  { value: 'avg-desire', label: 'Vontade média' },
   { value: 'my-rating', label: 'Minha nota' },
   { value: 'avg-rating', label: 'Nota média' },
 ]
