@@ -34,6 +34,15 @@ If a change makes a test obsolete, update it — don't delete coverage. Pure log
 - `src/router/` — Vue Router with a hash history and an auth guard
 - `supabase/migration.sql` — database schema, seed data, and the `login` RPC
 
+## Git conventions
+
+- **Branch names** use conventional commit prefixes: `feat/description`,
+  `fix/description`, `refactor/description`, `chore/description`, `docs/description`,
+  `test/description`.
+- **Commit messages** follow [Conventional Commits](https://www.conventionalcommits.org/):
+  `feat: add image search`, `fix: handle empty categories`, `chore: add Dockerfile`, etc.
+  Use a scope when it adds clarity: `feat(auth): add change-password flow`.
+
 ## Conventions
 
 - **Tests** live next to the file they cover as `*.test.js`.
