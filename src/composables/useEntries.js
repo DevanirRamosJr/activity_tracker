@@ -15,7 +15,7 @@ export function useEntries() {
       .select(`
         *,
         category:categories(*),
-        history:entry_history(*),
+        history:entry_history(*, user:users(username)),
         scores:user_entry_scores(*)
       `)
       .order('created_at', { ascending: false })
@@ -49,7 +49,8 @@ export function useEntries() {
 
     await supabase.from('entry_history').insert({
       entry_id: entry.id,
-      description: `Entry added · status "${form.status}"`,
+      user_id: currentUser.value.id,
+      description: `"${form.title.trim()}" added · status "${form.status}"`,
     })
 
     await supabase.from('user_entry_scores').insert({
@@ -88,7 +89,7 @@ export function useEntries() {
 
     if (logs.length) {
       await supabase.from('entry_history').insert(
-        logs.map(desc => ({ entry_id: id, description: desc }))
+        logs.map(desc => ({ entry_id: id, user_id: currentUser.value.id, description: desc }))
       )
     }
 

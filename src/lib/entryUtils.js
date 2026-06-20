@@ -1,14 +1,14 @@
 export const SORT_OPTIONS = [
-  { value: 'newest', label: 'Newest first' },
-  { value: 'oldest', label: 'Oldest first' },
+  { value: 'newest', label: 'Mais recentes' },
+  { value: 'oldest', label: 'Mais antigos' },
   { value: 'a-z', label: 'A → Z' },
   { value: 'z-a', label: 'Z → A' },
-  { value: 'updated', label: 'Recently updated' },
+  { value: 'updated', label: 'Atualizados' },
   { value: 'status', label: 'Status' },
-  { value: 'my-desire', label: 'My desire' },
-  { value: 'avg-desire', label: 'Avg desire' },
-  { value: 'my-rating', label: 'My rating' },
-  { value: 'avg-rating', label: 'Avg rating' },
+  { value: 'my-desire', label: 'Meu desejo' },
+  { value: 'avg-desire', label: 'Desejo médio' },
+  { value: 'my-rating', label: 'Minha nota' },
+  { value: 'avg-rating', label: 'Nota média' },
 ]
 
 export const STATUS_ORDER = { 'Want to': 0, 'In Progress': 1, Done: 2 }

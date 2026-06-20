@@ -6,27 +6,33 @@
         <div>
           <h1 class="text-2xl font-semibold text-gray-900 tracking-tight">BB - Tracker</h1>
           <p class="text-sm text-gray-400 mt-0.5">
-            {{ entries.length }} {{ entries.length === 1 ? 'entry' : 'entries' }}
+            {{ entries.length }} {{ entries.length === 1 ? t('list.item') : t('list.items') }}
           </p>
         </div>
-        <div class="flex gap-2">
+        <div class="flex items-center gap-2">
           <button
             @click="showAdd = true"
             class="bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
           >
-            + Add
+            {{ t('header.add') }}
           </button>
           <button
             @click="showPassword = true"
             class="text-sm text-gray-400 hover:text-gray-700 px-3 py-2 transition-colors"
           >
-            Password
+            {{ t('header.password') }}
+          </button>
+          <button
+            @click="toggleLocale"
+            class="text-xs font-medium text-gray-400 hover:text-gray-700 px-2 py-1 border border-gray-200 rounded transition-colors"
+          >
+            {{ locale === 'pt-BR' ? 'EN' : 'PT' }}
           </button>
           <button
             @click="handleLogout"
             class="text-sm text-gray-400 hover:text-gray-700 px-3 py-2 transition-colors"
           >
-            Logout
+            {{ t('header.logout') }}
           </button>
         </div>
       </div>
@@ -36,14 +42,14 @@
         <input
           v-model="search"
           class="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400"
-          placeholder="Search titles…"
+          :placeholder="t('list.searchPlaceholder')"
         />
         <select
           v-model="sortBy"
           class="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none focus:border-gray-400"
         >
-          <option v-for="opt in SORT_OPTIONS" :key="opt.value" :value="opt.value">
-            {{ opt.label }}
+          <option v-for="key in sortKeys" :key="key" :value="key">
+            {{ t('sort.' + key) }}
           </option>
         </select>
       </div>
@@ -57,13 +63,13 @@
       />
 
       <!-- Loading -->
-      <p v-if="loading" class="text-gray-400 text-sm py-8 text-center">Loading…</p>
+      <p v-if="loading" class="text-gray-400 text-sm py-8 text-center">{{ t('list.loading') }}</p>
 
       <!-- Empty state -->
       <div v-else-if="filtered.length === 0" class="text-center py-16 text-gray-400">
         <p class="text-4xl mb-3">📋</p>
-        <p class="font-medium text-gray-500">Nothing here yet</p>
-        <p class="text-sm mt-1">Add something to get started!</p>
+        <p class="font-medium text-gray-500">{{ t('list.emptyTitle') }}</p>
+        <p class="text-sm mt-1">{{ t('list.emptyHint') }}</p>
       </div>
 
       <!-- Entries -->
@@ -99,6 +105,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 import { useEntries } from '../composables/useEntries'
 import { useCategories } from '../composables/useCategories'
+import { useI18n } from '../composables/useI18n'
 import CategoryFilter from '../components/CategoryFilter.vue'
 import EntryCard from '../components/EntryCard.vue'
 import AddModal from '../components/AddModal.vue'
@@ -109,12 +116,19 @@ const router = useRouter()
 const { currentUser, logout } = useAuth()
 const { entries, loading, fetchEntries, addEntry, updateEntry, deleteEntry } = useEntries()
 const { categories, fetchCategories } = useCategories()
+const { locale, t, setLocale } = useI18n()
+
+const sortKeys = SORT_OPTIONS.map(o => o.value)
 
 const filter = ref([])
 const search = ref('')
 const sortBy = ref('newest')
 const showAdd = ref(false)
 const showPassword = ref(false)
+
+function toggleLocale() {
+  setLocale(locale.value === 'pt-BR' ? 'en' : 'pt-BR')
+}
 
 const filtered = computed(() => {
   const result = filterEntries(entries.value, filter.value, search.value)

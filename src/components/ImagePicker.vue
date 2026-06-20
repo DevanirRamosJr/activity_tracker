@@ -1,13 +1,13 @@
 <template>
   <div class="space-y-2">
-    <label class="text-xs text-gray-400 block">Image</label>
+    <label class="text-xs text-gray-400 block">{{ t('image.label') }}</label>
 
     <!-- Current selection -->
     <div v-if="modelValue" class="relative inline-block">
       <img :src="modelValue" alt="" class="h-28 rounded-lg border border-gray-200 object-cover" />
       <button
         type="button"
-        aria-label="Remove image"
+        :aria-label="t('image.remove')"
         class="absolute -top-2 -right-2 bg-white border border-gray-200 rounded-full w-6 h-6 leading-none text-gray-500 hover:text-red-500 shadow-sm"
         @click="$emit('update:modelValue', '')"
       >
@@ -19,7 +19,7 @@
     <div class="flex flex-col sm:flex-row gap-2">
       <input
         v-model="query"
-        placeholder="Search for an image…"
+        :placeholder="t('image.searchPlaceholder')"
         class="w-full sm:flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
         @input="userEditedQuery = true"
         @keydown.enter.prevent="search"
@@ -31,10 +31,10 @@
           class="flex-1 sm:flex-none text-sm bg-gray-900 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-40"
           @click="search"
         >
-          {{ searching ? '…' : 'Search' }}
+          {{ searching ? '…' : t('image.search') }}
         </button>
         <label class="flex-1 sm:flex-none text-center text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:border-gray-400 transition-colors whitespace-nowrap">
-          {{ uploading ? 'Uploading…' : 'Upload' }}
+          {{ uploading ? t('image.uploading') : t('image.upload') }}
           <input type="file" accept="image/*" class="hidden" @change="onUpload" />
         </label>
       </div>
@@ -63,12 +63,14 @@
 import { ref, watch } from 'vue'
 import { searchImages } from '../lib/imageSearch'
 import { uploadImage } from '../lib/storage'
+import { useI18n } from '../composables/useI18n'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
   title: { type: String, default: '' },
 })
 const emit = defineEmits(['update:modelValue'])
+const { t } = useI18n()
 
 const query = ref(props.title || '')
 const results = ref([])
@@ -82,12 +84,10 @@ function markFailed(url) {
   failed.value = new Set(failed.value).add(url)
 }
 
-// Mirror the title into the search box in real time, until the user types their
-// own query (then we stop overwriting what they typed).
 watch(
   () => props.title,
-  t => {
-    if (!userEditedQuery.value) query.value = t || ''
+  val => {
+    if (!userEditedQuery.value) query.value = val || ''
   }
 )
 
@@ -99,7 +99,7 @@ async function search() {
   failed.value = new Set()
   try {
     results.value = await searchImages(query.value)
-    if (!results.value.length) error.value = 'No images found'
+    if (!results.value.length) error.value = t('image.noResults')
   } catch (e) {
     error.value = e.message
   } finally {

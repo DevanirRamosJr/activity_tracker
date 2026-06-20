@@ -1,4 +1,12 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+
+vi.mock('../composables/useI18n', async () => {
+  const ptBR = (await import('../locales/pt-BR')).default
+  function t(key) {
+    return key.split('.').reduce((o, k) => o?.[k], ptBR) ?? key
+  }
+  return { useI18n: () => ({ t, locale: { value: 'pt-BR' }, setLocale: vi.fn(), dateLocale: () => 'pt-BR' }) }
+})
 import { mount } from '@vue/test-utils'
 import CategoryFilter from './CategoryFilter.vue'
 
@@ -29,7 +37,7 @@ describe('CategoryFilter', () => {
     const wrapper = factory(['Movie', 'Anime', 'Game'])
     const buttons = wrapper.findAll('button')
     expect(buttons).toHaveLength(4)
-    expect(buttons[0].text()).toContain('All')
+    expect(buttons[0].text()).toContain('Todos')
   })
 
   it('shows counts only for categories with entries', () => {

@@ -6,6 +6,12 @@ vi.mock('../composables/useAuth', () => ({
   useAuth: () => ({ changePassword }),
 }))
 
+vi.mock('../composables/useI18n', async () => {
+  const ptBR = (await import('../locales/pt-BR')).default
+  function t(key) { return key.split('.').reduce((o, k) => o?.[k], ptBR) ?? key }
+  return { useI18n: () => ({ t, locale: { value: 'pt-BR' }, setLocale: vi.fn(), dateLocale: () => 'pt-BR' }) }
+})
+
 import ChangePasswordModal from './ChangePasswordModal.vue'
 
 function fill(wrapper, { current, next, confirm }) {
@@ -25,7 +31,7 @@ describe('ChangePasswordModal', () => {
   it('shows a validation error when fields are empty', async () => {
     const wrapper = mount(ChangePasswordModal)
     await wrapper.find('form').trigger('submit')
-    expect(wrapper.text()).toContain('All fields are required')
+    expect(wrapper.text()).toContain('Todos os campos são obrigatórios')
     expect(changePassword).not.toHaveBeenCalled()
   })
 
@@ -33,7 +39,7 @@ describe('ChangePasswordModal', () => {
     const wrapper = mount(ChangePasswordModal)
     await fill(wrapper, { current: 'admin', next: 'abcd', confirm: 'abce' })
     await wrapper.find('form').trigger('submit')
-    expect(wrapper.text()).toContain('New passwords do not match')
+    expect(wrapper.text()).toContain('As senhas não coincidem')
     expect(changePassword).not.toHaveBeenCalled()
   })
 
@@ -41,7 +47,7 @@ describe('ChangePasswordModal', () => {
     const wrapper = mount(ChangePasswordModal)
     await fill(wrapper, { current: 'admin', next: 'ab', confirm: 'ab' })
     await wrapper.find('form').trigger('submit')
-    expect(wrapper.text()).toContain('at least 4 characters')
+    expect(wrapper.text()).toContain('pelo menos 4 caracteres')
     expect(changePassword).not.toHaveBeenCalled()
   })
 
@@ -49,7 +55,7 @@ describe('ChangePasswordModal', () => {
     const wrapper = mount(ChangePasswordModal)
     await fill(wrapper, { current: 'admin', next: 'admin', confirm: 'admin' })
     await wrapper.find('form').trigger('submit')
-    expect(wrapper.text()).toContain('different from the current one')
+    expect(wrapper.text()).toContain('diferente da atual')
     expect(changePassword).not.toHaveBeenCalled()
   })
 
@@ -61,9 +67,9 @@ describe('ChangePasswordModal', () => {
     await flushPromises()
 
     expect(changePassword).toHaveBeenCalledWith('admin', 'newpass')
-    expect(wrapper.text()).toContain('Password updated.')
-    // Save button is replaced by a Close action after success.
-    expect(wrapper.findAll('button').some(b => b.text() === 'Save')).toBe(false)
+    expect(wrapper.text()).toContain('Senha atualizada.')
+    // Salvar button is replaced by a Close action after success.
+    expect(wrapper.findAll('button').some(b => b.text() === 'Salvar')).toBe(false)
   })
 
   it('surfaces the error returned by changePassword', async () => {
@@ -76,9 +82,9 @@ describe('ChangePasswordModal', () => {
     expect(wrapper.text()).toContain('Current password is incorrect')
   })
 
-  it('emits close when Cancel is clicked', async () => {
+  it('emits close when Cancelar is clicked', async () => {
     const wrapper = mount(ChangePasswordModal)
-    const cancel = wrapper.findAll('button').find(b => b.text() === 'Cancel')
+    const cancel = wrapper.findAll('button').find(b => b.text() === 'Cancelar')
     await cancel.trigger('click')
     expect(wrapper.emitted('close')).toHaveLength(1)
   })

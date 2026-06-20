@@ -6,6 +6,12 @@ const uploadImage = vi.fn()
 vi.mock('../lib/imageSearch', () => ({ searchImages: (...a) => searchImages(...a) }))
 vi.mock('../lib/storage', () => ({ uploadImage: (...a) => uploadImage(...a) }))
 
+vi.mock('../composables/useI18n', async () => {
+  const ptBR = (await import('../locales/pt-BR')).default
+  function t(key) { return key.split('.').reduce((o, k) => o?.[k], ptBR) ?? key }
+  return { useI18n: () => ({ t, locale: { value: 'pt-BR' }, setLocale: vi.fn(), dateLocale: () => 'pt-BR' }) }
+})
+
 import ImagePicker from './ImagePicker.vue'
 
 describe('ImagePicker', () => {
@@ -37,7 +43,7 @@ describe('ImagePicker', () => {
     const wrapper = mount(ImagePicker, { props: { modelValue: 'https://img/x.jpg' } })
     expect(wrapper.find('img').attributes('src')).toBe('https://img/x.jpg')
 
-    await wrapper.find('button[aria-label="Remove image"]').trigger('click')
+    await wrapper.find('button[aria-label="Remover imagem"]').trigger('click')
     expect(wrapper.emitted('update:modelValue')[0]).toEqual([''])
   })
 
@@ -48,7 +54,7 @@ describe('ImagePicker', () => {
     ])
     const wrapper = mount(ImagePicker, { props: { title: 'Halo' } })
 
-    await wrapper.findAll('button').find(b => b.text() === 'Search').trigger('click')
+    await wrapper.findAll('button').find(b => b.text() === 'Buscar').trigger('click')
     await flushPromises()
 
     const thumbs = wrapper.findAll('.grid button')
@@ -62,15 +68,15 @@ describe('ImagePicker', () => {
   it('shows a message when the search returns nothing', async () => {
     searchImages.mockResolvedValue([])
     const wrapper = mount(ImagePicker, { props: { title: 'zzz' } })
-    await wrapper.findAll('button').find(b => b.text() === 'Search').trigger('click')
+    await wrapper.findAll('button').find(b => b.text() === 'Buscar').trigger('click')
     await flushPromises()
-    expect(wrapper.text()).toContain('No images found')
+    expect(wrapper.text()).toContain('Nenhuma imagem encontrada')
   })
 
   it('surfaces a search error', async () => {
     searchImages.mockRejectedValue(new Error('Quota exceeded'))
     const wrapper = mount(ImagePicker, { props: { title: 'x' } })
-    await wrapper.findAll('button').find(b => b.text() === 'Search').trigger('click')
+    await wrapper.findAll('button').find(b => b.text() === 'Buscar').trigger('click')
     await flushPromises()
     expect(wrapper.text()).toContain('Quota exceeded')
   })

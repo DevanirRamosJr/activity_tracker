@@ -16,10 +16,9 @@ describe('STATUS_COLORS', () => {
 })
 
 describe('formatDate', () => {
-  it('formats a date with month, day and year', () => {
-    // Built from local components to avoid timezone flakiness.
+  it('formats a date in pt-BR with day, month and year', () => {
     const result = formatDate(new Date(2026, 5, 18, 15, 30))
-    expect(result).toContain('Jun')
+    expect(result).toContain('jun')
     expect(result).toContain('18')
     expect(result).toContain('2026')
   })

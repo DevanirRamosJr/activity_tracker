@@ -34,6 +34,7 @@ create table entries (
 create table entry_history (
   id uuid primary key default gen_random_uuid(),
   entry_id uuid not null references entries(id) on delete cascade,
+  user_id uuid references users(id),
   description text not null,
   created_at timestamptz default now()
 );

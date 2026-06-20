@@ -6,10 +6,10 @@ export const STATUS_COLORS = {
   Done: 'bg-emerald-100 text-emerald-700',
 }
 
-export function formatDate(d) {
-  return new Date(d).toLocaleString('en-US', {
+export function formatDate(d, locale = 'pt-BR') {
+  return new Date(d).toLocaleString(locale, {
+    day: '2-digit',
     month: 'short',
-    day: 'numeric',
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
