@@ -11,7 +11,7 @@
     />
     <button
       type="button"
-      :aria-label="visible ? 'Hide password' : 'Show password'"
+      :aria-label="visible ? t('passwordInput.hide') : t('passwordInput.show')"
       :aria-pressed="visible"
       class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 transition-colors"
       @click="visible = !visible"
@@ -31,6 +31,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from '../composables/useI18n'
+
+const { t } = useI18n()
 
 defineProps({
   modelValue: { type: String, default: '' },

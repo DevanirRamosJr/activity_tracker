@@ -7,6 +7,12 @@ vi.mock('../composables/useAuth', async () => {
   return { useAuth: () => ({ currentUser: ref({ id: 'user-a', username: 'admin' }) }) }
 })
 
+vi.mock('../composables/useI18n', async () => {
+  const ptBR = (await import('../locales/pt-BR')).default
+  function t(key) { return key.split('.').reduce((o, k) => o?.[k], ptBR) ?? key }
+  return { useI18n: () => ({ t, locale: { value: 'pt-BR' }, setLocale: vi.fn(), dateLocale: () => 'pt-BR' }) }
+})
+
 // The ImagePicker child pulls in network/storage modules; stub them out here.
 vi.mock('../lib/imageSearch', () => ({ searchImages: vi.fn(), isConfigured: () => true }))
 vi.mock('../lib/storage', () => ({ uploadImage: vi.fn() }))
@@ -25,7 +31,7 @@ function makeEntry(overrides = {}) {
     status: 'Done',
     notes: 'great film',
     created_at: '2026-01-01T00:00:00Z',
-    history: [{ created_at: '2026-01-01T00:00:00Z', description: 'Entry added' }],
+    history: [{ created_at: '2026-01-01T00:00:00Z', description: 'Entry added', user: { username: 'admin' } }],
     scores: [{ user_id: 'user-a', desire_level: 7, rating: 9 }],
     ...overrides,
   }
@@ -50,8 +56,8 @@ describe('EntryCard', () => {
 
   it("shows the current user's desire and rating badges", () => {
     const text = factory().text()
-    expect(text).toContain('Desire 7/10')
-    expect(text).toContain('Rating 9/10')
+    expect(text).toContain('Vontade 7/10')
+    expect(text).toContain('Nota 9/10')
   })
 
   it('renders the poster when image_url is set', () => {
@@ -62,23 +68,23 @@ describe('EntryCard', () => {
   it('omits the rating badge when the user has no rating', () => {
     const entry = makeEntry({ scores: [{ user_id: 'user-a', desire_level: 5, rating: null }] })
     const text = factory(entry).text()
-    expect(text).toContain('Desire 5/10')
-    expect(text).not.toContain('Rating')
+    expect(text).toContain('Vontade 5/10')
+    expect(text).not.toContain('Nota')
   })
 
   it('emits delete when the Delete button is clicked', async () => {
     const wrapper = factory()
-    await buttonByText(wrapper, 'Delete').trigger('click')
+    await buttonByText(wrapper, 'Excluir').trigger('click')
     expect(wrapper.emitted('delete')).toHaveLength(1)
   })
 
   it('enters edit mode pre-filled and emits update on save', async () => {
     const wrapper = factory()
-    await buttonByText(wrapper, 'Edit').trigger('click')
+    await buttonByText(wrapper, 'Editar').trigger('click')
 
-    expect(wrapper.find('input[placeholder="Title"]').element.value).toBe('Inception')
+    expect(wrapper.find('input[placeholder="Título"]').element.value).toBe('Inception')
 
-    await buttonByText(wrapper, 'Save').trigger('click')
+    await buttonByText(wrapper, 'Salvar').trigger('click')
     const payload = wrapper.emitted('update')[0][0]
     expect(payload).toMatchObject({
       title: 'Inception',
@@ -93,10 +99,11 @@ describe('EntryCard', () => {
     const wrapper = factory()
     expect(wrapper.find('ul').exists()).toBe(false)
 
-    const historyToggle = wrapper.findAll('button').find(b => b.text().includes('History'))
+    const historyToggle = wrapper.findAll('button').find(b => b.text().includes('Histórico'))
     await historyToggle.trigger('click')
 
     expect(wrapper.find('ul').exists()).toBe(true)
     expect(wrapper.find('ul').text()).toContain('Entry added')
+    expect(wrapper.find('ul').text()).toContain('admin')
   })
 })

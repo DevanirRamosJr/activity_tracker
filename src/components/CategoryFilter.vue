@@ -9,7 +9,7 @@
           : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400',
       ]"
     >
-      All
+      {{ t('list.all') }}
       <span
         v-if="totalCount > 0"
         :class="['ml-1.5 text-xs', allSelected ? 'text-gray-300' : 'text-gray-400']"
@@ -41,6 +41,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from '../composables/useI18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: { type: Array, required: true },

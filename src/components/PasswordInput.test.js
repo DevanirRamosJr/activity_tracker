@@ -1,12 +1,19 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+
+vi.mock('../composables/useI18n', async () => {
+  const ptBR = (await import('../locales/pt-BR')).default
+  function t(key) { return key.split('.').reduce((o, k) => o?.[k], ptBR) ?? key }
+  return { useI18n: () => ({ t, locale: { value: 'pt-BR' }, setLocale: vi.fn(), dateLocale: () => 'pt-BR' }) }
+})
+
 import PasswordInput from './PasswordInput.vue'
 
 describe('PasswordInput', () => {
   it('hides the password by default', () => {
     const wrapper = mount(PasswordInput, { props: { modelValue: 'secret' } })
     expect(wrapper.find('input').attributes('type')).toBe('password')
-    expect(wrapper.find('button').attributes('aria-label')).toBe('Show password')
+    expect(wrapper.find('button').attributes('aria-label')).toBe('Mostrar senha')
   })
 
   it('reveals and re-hides the password when the toggle is clicked', async () => {
@@ -15,11 +22,11 @@ describe('PasswordInput', () => {
 
     await button.trigger('click')
     expect(wrapper.find('input').attributes('type')).toBe('text')
-    expect(button.attributes('aria-label')).toBe('Hide password')
+    expect(button.attributes('aria-label')).toBe('Ocultar senha')
 
     await button.trigger('click')
     expect(wrapper.find('input').attributes('type')).toBe('password')
-    expect(button.attributes('aria-label')).toBe('Show password')
+    expect(button.attributes('aria-label')).toBe('Mostrar senha')
   })
 
   it('emits update:modelValue on input', async () => {

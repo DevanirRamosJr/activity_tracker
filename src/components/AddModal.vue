@@ -4,13 +4,13 @@
     @click.self="$emit('close')"
   >
     <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl my-auto max-h-[calc(100vh-2rem)] overflow-y-auto">
-      <h2 class="text-lg font-semibold text-gray-900 mb-4">Add to your list</h2>
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('addModal.title') }}</h2>
       <div class="space-y-3">
         <input
           ref="titleInput"
           v-model="form.title"
           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
-          placeholder="Title"
+          :placeholder="t('addModal.titlePlaceholder')"
           @keydown.enter="submit"
         />
         <div class="flex gap-2">
@@ -29,7 +29,7 @@
         </div>
         <div class="flex gap-2">
           <div class="flex-1">
-            <label class="text-xs text-gray-400 mb-1 block">Desire level (1-10)</label>
+            <label class="text-xs text-gray-400 mb-1 block">{{ t('addModal.desireLabel') }}</label>
             <select
               v-model.number="form.desire_level"
               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
@@ -38,12 +38,12 @@
             </select>
           </div>
           <div class="flex-1">
-            <label class="text-xs text-gray-400 mb-1 block">Rating (optional)</label>
+            <label class="text-xs text-gray-400 mb-1 block">{{ t('addModal.ratingLabel') }}</label>
             <select
               v-model.number="form.rating"
               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
             >
-              <option :value="0">No rating</option>
+              <option :value="0">{{ t('addModal.noRating') }}</option>
               <option v-for="n in 10" :key="n" :value="n">{{ n }}</option>
             </select>
           </div>
@@ -53,19 +53,19 @@
           v-model="form.notes"
           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400 resize-none"
           rows="2"
-          placeholder="Notes (optional)"
+          :placeholder="t('addModal.notes')"
         />
       </div>
       <div class="flex justify-end gap-2 mt-5">
         <button @click="$emit('close')" class="text-sm text-gray-400 hover:text-gray-700 px-3 py-2 transition-colors">
-          Cancel
+          {{ t('addModal.cancel') }}
         </button>
         <button
           @click="submit"
           :disabled="!form.title.trim() || submitting"
           class="text-sm bg-gray-900 text-white px-5 py-2 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-30"
         >
-          {{ submitting ? 'Adding…' : 'Add' }}
+          {{ submitting ? t('addModal.submitting') : t('addModal.submit') }}
         </button>
       </div>
     </div>
@@ -75,12 +75,14 @@
 <script setup>
 import { reactive, ref, onMounted, watch } from 'vue'
 import { STATUSES } from '../constants'
+import { useI18n } from '../composables/useI18n'
 import ImagePicker from './ImagePicker.vue'
 
 const props = defineProps({
   categories: { type: Array, required: true },
 })
 const emit = defineEmits(['close', 'add'])
+const { t } = useI18n()
 
 const titleInput = ref(null)
 const submitting = ref(false)
