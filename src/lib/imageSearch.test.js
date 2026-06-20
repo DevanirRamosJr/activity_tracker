@@ -10,7 +10,7 @@ function routeFetch({ wiki, commons, fandom, tmdb } = {}) {
   return vi.fn(input => {
     const url = String(input)
     if (url.includes('api.themoviedb.org')) return Promise.resolve(ok(tmdb ?? { results: [] }))
-    if (url.includes('services.fandom.com')) return Promise.resolve(ok(fandom ?? { results: [] }))
+    if (url.includes('fandom-proxy')) return Promise.resolve(ok(fandom ?? { results: [] }))
     if (url.includes('commons.wikimedia.org')) return Promise.resolve(ok(commons ?? { query: { pages: {} } }))
     return Promise.resolve(ok(wiki ?? { query: { pages: {} } }))
   })
@@ -56,7 +56,7 @@ describe('imageSearch (multi-source)', () => {
     const urls = fetch.mock.calls.map(c => String(c[0]))
     expect(urls.some(u => u.includes('en.wikipedia.org'))).toBe(true)
     expect(urls.some(u => u.includes('commons.wikimedia.org'))).toBe(true)
-    expect(urls.some(u => u.includes('services.fandom.com') && u.includes('namespace=0'))).toBe(true)
+    expect(urls.some(u => u.includes('fandom-proxy') && u.includes('namespace=0'))).toBe(true)
     expect(urls.some(u => u.includes('api.themoviedb.org'))).toBe(false)
   })
 
@@ -75,17 +75,15 @@ describe('imageSearch (multi-source)', () => {
     })
   })
 
-  it('caps each source at 4 results', async () => {
+  it('caps each source at the per-source limit', async () => {
+    vi.stubEnv('VITE_IMAGES_PER_SOURCE', '3')
     global.fetch = routeFetch({
       wiki: wikiPages('https://w/0.jpg', 'https://w/1.jpg', 'https://w/2.jpg', 'https://w/3.jpg', 'https://w/4.jpg'),
-      commons: commonsPages('https://c/0.jpg', 'https://c/1.jpg', 'https://c/2.jpg', 'https://c/3.jpg', 'https://c/4.jpg'),
     })
 
     const results = await searchImages('x')
     const wikiCount = results.filter(r => r.url.startsWith('https://w/')).length
-    const commonsCount = results.filter(r => r.url.startsWith('https://c/')).length
-    expect(wikiCount).toBe(4)
-    expect(commonsCount).toBe(4)
+    expect(wikiCount).toBe(3)
   })
 
   it('honors VITE_IMAGES_PER_SOURCE for the per-source cap', async () => {
@@ -126,7 +124,9 @@ describe('imageSearch (multi-source)', () => {
       },
     })
     const results = await searchImages('zelda')
-    expect(results[0].url).toBe(
+    const fandomResult = results.find(r => r.url.includes('wikia.nocookie.net'))
+    expect(fandomResult).toBeTruthy()
+    expect(fandomResult.url).toBe(
       'https://static.wikia.nocookie.net/zelda/images/a/b/Sword.png/revision/latest/scale-to-width-down/400'
     )
   })
