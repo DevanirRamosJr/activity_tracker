@@ -4,7 +4,6 @@
 
 const WIKI = 'https://en.wikipedia.org/w/api.php'
 const COMMONS = 'https://commons.wikimedia.org/w/api.php'
-const FANDOM = import.meta.env.VITE_FANDOM_PROXY_URL
 const TMDB = 'https://api.themoviedb.org/3/search/multi'
 const TMDB_IMG = 'https://image.tmdb.org/t/p/w500'
 
@@ -77,9 +76,10 @@ async function wikipediaImages(term) {
 
 // Cross-wiki Fandom search via CORS proxy (Cloudflare Worker).
 async function fandomImages(term) {
-  if (!FANDOM) return []
+  const proxy = import.meta.env.VITE_FANDOM_PROXY_URL
+  if (!proxy) return []
   const params = new URLSearchParams({ query: term, lang: 'en', namespace: '0', limit: '8' })
-  const data = await fetchJson(`${FANDOM}?${params.toString()}`)
+  const data = await fetchJson(`${proxy}?${params.toString()}`)
   if (!data?.results) return []
   return data.results
     .filter(r => r.thumbnail)
