@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// Mock the Supabase client before importing the composable.
+const setAccessToken = vi.fn()
+
 vi.mock('../lib/supabase', () => ({
   supabase: { rpc: vi.fn() },
+  setAccessToken: (...args) => setAccessToken(...args),
 }))
 
 import { supabase } from '../lib/supabase'
@@ -12,13 +14,12 @@ describe('useAuth', () => {
   beforeEach(() => {
     localStorage.clear()
     vi.clearAllMocks()
-    // Reset shared module state between tests.
     useAuth().logout()
   })
 
-  it('logs in and persists the user on valid credentials', async () => {
+  it('logs in, stores the JWT, and persists the user', async () => {
     supabase.rpc.mockResolvedValue({
-      data: { success: true, user: { id: 'u1', username: 'admin' } },
+      data: { success: true, token: 'jwt-abc', user: { id: 'u1', username: 'admin' } },
       error: null,
     })
 
@@ -28,10 +29,8 @@ describe('useAuth', () => {
     expect(ok).toBe(true)
     expect(isAuthenticated.value).toBe(true)
     expect(currentUser.value).toEqual({ id: 'u1', username: 'admin' })
-    expect(JSON.parse(localStorage.getItem('currentUser'))).toEqual({
-      id: 'u1',
-      username: 'admin',
-    })
+    expect(localStorage.getItem('authToken')).toBe('jwt-abc')
+    expect(setAccessToken).toHaveBeenCalledWith('jwt-abc')
     expect(supabase.rpc).toHaveBeenCalledWith('login', {
       p_username: 'admin',
       p_password: 'admin',
@@ -46,7 +45,7 @@ describe('useAuth', () => {
 
     expect(ok).toBe(false)
     expect(isAuthenticated.value).toBe(false)
-    expect(localStorage.getItem('currentUser')).toBeNull()
+    expect(localStorage.getItem('authToken')).toBeNull()
   })
 
   it('fails login when the RPC returns an error', async () => {
@@ -57,25 +56,28 @@ describe('useAuth', () => {
     expect(isAuthenticated.value).toBe(false)
   })
 
-  it('logs out and clears persisted state', async () => {
+  it('logs out, clears the JWT, and resets the client', async () => {
     supabase.rpc.mockResolvedValue({
-      data: { success: true, user: { id: 'u1', username: 'admin' } },
+      data: { success: true, token: 'jwt-abc', user: { id: 'u1', username: 'admin' } },
       error: null,
     })
 
     const { login, logout, isAuthenticated, currentUser } = useAuth()
     await login('admin', 'admin')
+    setAccessToken.mockClear()
     logout()
 
     expect(isAuthenticated.value).toBe(false)
     expect(currentUser.value).toBeNull()
     expect(localStorage.getItem('currentUser')).toBeNull()
+    expect(localStorage.getItem('authToken')).toBeNull()
+    expect(setAccessToken).toHaveBeenCalledWith(null)
   })
 
   describe('changePassword', () => {
     async function loginAs(id = 'u1') {
       supabase.rpc.mockResolvedValueOnce({
-        data: { success: true, user: { id, username: 'admin' } },
+        data: { success: true, token: 'jwt-abc', user: { id, username: 'admin' } },
         error: null,
       })
       await useAuth().login('admin', 'admin')
