@@ -45,6 +45,28 @@ export function computeWeights(entries, options = {}) {
   })
 }
 
+// Builds wheel segments (cumulative angles) from a weighted list. Segment
+// span is proportional to weight, so the wheel visually matches the odds.
+export function wheelSegments(weighted) {
+  const total = weighted.reduce((sum, w) => sum + w.weight, 0) || weighted.length || 1
+  let start = 0
+  return weighted.map(w => {
+    const span = (w.weight / total) * 360
+    const seg = { entry: w.entry, start, end: start + span, mid: start + span / 2, span }
+    start += span
+    return seg
+  })
+}
+
+// Rotation (deg) that brings a segment's mid-angle under the top pointer,
+// always spinning forward by at least `spins` full turns.
+export function targetRotation(current, midAngle, spins = 6) {
+  const desiredMod = (360 - (midAngle % 360)) % 360
+  const base = current + spins * 360
+  const delta = ((desiredMod - (base % 360)) % 360 + 360) % 360
+  return base + delta
+}
+
 // Picks a single entry using the computed weights. `rng` is injectable for tests.
 export function drawEntry(entries, options = {}, rng = Math.random) {
   const weighted = computeWeights(entries, options)

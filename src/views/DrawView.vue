@@ -73,12 +73,20 @@
           </p>
         </div>
 
+        <!-- Show images on wheel -->
+        <div class="border-t border-gray-100 pt-4">
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input type="checkbox" v-model="showImages" class="rounded" />
+            {{ t('draw.showImages') }}
+          </label>
+        </div>
+
         <!-- Draw button -->
         <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
           <span class="text-xs text-gray-400">{{ eligibleCount }} {{ t('draw.eligible') }}</span>
           <button
             @click="doDraw"
-            :disabled="eligibleCount === 0"
+            :disabled="eligibleCount === 0 || spinning"
             class="bg-gray-900 text-white text-sm font-medium px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-30"
           >
             {{ result ? t('draw.again') : t('draw.button') }}
@@ -86,8 +94,13 @@
         </div>
       </div>
 
+      <!-- Wheel -->
+      <div v-if="eligibleCount > 0" class="mt-6">
+        <DrawWheel ref="wheel" :segments="segments" :show-images="showImages" @done="onWheelDone" />
+      </div>
+
       <!-- Empty -->
-      <p v-if="drawn && !result" class="text-center text-gray-400 text-sm py-8">
+      <p v-if="drawn && eligibleCount === 0" class="text-center text-gray-400 text-sm py-8">
         {{ t('draw.empty') }}
       </p>
 
@@ -127,14 +140,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEntries } from '../composables/useEntries'
 import { useCategories } from '../composables/useCategories'
 import { useI18n } from '../composables/useI18n'
 import { STATUSES, STATUS_COLORS, formatDate } from '../constants'
 import { getAvgScore } from '../lib/entryUtils'
-import { computeWeights, drawEntry } from '../lib/draw'
+import { computeWeights, drawEntry, wheelSegments } from '../lib/draw'
+import DrawWheel from '../components/DrawWheel.vue'
 
 const router = useRouter()
 const { entries, fetchEntries } = useEntries()
@@ -145,9 +159,13 @@ const selectedStatuses = ref([...STATUSES])
 const selectedCategories = ref([])
 const desire = reactive({ enabled: false, invert: false })
 const date = reactive({ enabled: false, invert: false })
+const showImages = ref(false)
 
 const result = ref(null)
 const drawn = ref(false)
+const spinning = ref(false)
+const wheel = ref(null)
+let pendingWinner = null
 
 const options = computed(() => ({
   statuses: selectedStatuses.value,
@@ -156,7 +174,9 @@ const options = computed(() => ({
   date,
 }))
 
-const eligibleCount = computed(() => computeWeights(entries.value, options.value).length)
+const weighted = computed(() => computeWeights(entries.value, options.value))
+const segments = computed(() => wheelSegments(weighted.value))
+const eligibleCount = computed(() => weighted.value.length)
 
 function toggle(list, value) {
   const idx = list.indexOf(value)
@@ -176,9 +196,23 @@ function avgDesire(entry) {
   return v ? Math.round(v * 10) / 10 : 0
 }
 
-function doDraw() {
+async function doDraw() {
+  if (spinning.value) return
+  const winner = drawEntry(entries.value, options.value)
+  if (!winner) return
+
+  const idx = weighted.value.findIndex(w => w.entry.id === winner.id)
+  pendingWinner = winner
+  result.value = null
   drawn.value = true
-  result.value = drawEntry(entries.value, options.value)
+  spinning.value = true
+  await nextTick()
+  wheel.value?.spin(idx)
+}
+
+function onWheelDone() {
+  result.value = pendingWinner
+  spinning.value = false
 }
 
 onMounted(async () => {

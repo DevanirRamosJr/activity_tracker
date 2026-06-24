@@ -20,6 +20,7 @@ export default {
     categories: 'Categories',
     useDesire: 'Weight by desire',
     useDate: 'Weight by date',
+    showImages: 'Show images on the wheel',
     invert: 'Invert odds',
     desireHint: 'Higher average desire = better chance',
     desireHintInverted: 'Lower average desire = better chance',

@@ -20,6 +20,7 @@ export default {
     categories: 'Categorias',
     useDesire: 'Ponderar por vontade',
     useDate: 'Ponderar por data',
+    showImages: 'Mostrar imagens na roda',
     invert: 'Inverter chances',
     desireHint: 'Maior vontade média = mais chance',
     desireHintInverted: 'Menor vontade média = mais chance',

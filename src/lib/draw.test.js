@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { computeWeights, drawEntry } from './draw'
+import { computeWeights, drawEntry, wheelSegments, targetRotation } from './draw'
 
 function makeEntry(overrides = {}) {
   return {
@@ -103,6 +103,40 @@ describe('computeWeights', () => {
     )
     // single entry → date position 0.5 → factor 1 + 0.5*9 = 5.5; desire 6 → 6*5.5
     expect(result[0].weight).toBeCloseTo(6 * 5.5)
+  })
+})
+
+describe('wheelSegments', () => {
+  it('splits a full circle proportionally to weight', () => {
+    const segs = wheelSegments([
+      { entry: { id: 'a' }, weight: 3 },
+      { entry: { id: 'b' }, weight: 1 },
+    ])
+    expect(segs[0].span).toBe(270)
+    expect(segs[1].span).toBe(90)
+    expect(segs[0].start).toBe(0)
+    expect(segs[1].start).toBe(270)
+    expect(segs[1].end).toBeCloseTo(360)
+  })
+
+  it('gives a single entry the whole wheel', () => {
+    const segs = wheelSegments([{ entry: { id: 'a' }, weight: 1 }])
+    expect(segs[0].span).toBe(360)
+    expect(segs[0].mid).toBe(180)
+  })
+})
+
+describe('targetRotation', () => {
+  it('lands the segment mid-angle on the top pointer after full spins', () => {
+    const r = targetRotation(0, 90, 6)
+    expect(r % 360).toBe(270) // 90 + 270 = 360 ≡ 0 (top)
+    expect(r).toBeGreaterThanOrEqual(6 * 360)
+  })
+
+  it('always spins forward from the current rotation', () => {
+    const r = targetRotation(1000, 45, 6)
+    expect(r).toBeGreaterThan(1000)
+    expect((45 + r) % 360).toBeCloseTo(0)
   })
 })
 
