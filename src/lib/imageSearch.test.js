@@ -34,6 +34,8 @@ const commonsPages = (...sources) => ({
 
 describe('imageSearch (multi-source)', () => {
   beforeEach(() => {
+    // Ensure the Fandom proxy is "configured" regardless of the local env.
+    vi.stubEnv('VITE_FANDOM_PROXY_URL', 'https://fandom-proxy.test')
     global.fetch = routeFetch()
   })
   afterEach(() => {
