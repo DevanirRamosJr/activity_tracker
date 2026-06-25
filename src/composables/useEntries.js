@@ -16,7 +16,7 @@ export function useEntries() {
         *,
         category:categories(*),
         history:entry_history(*, user:users(username)),
-        scores:user_entry_scores(*)
+        scores:user_entry_scores(*, user:users(username))
       `)
       .order('created_at', { ascending: false })
 

@@ -92,11 +92,19 @@
             </span>
           </div>
           <p v-if="entry.notes" class="text-sm text-gray-500 mt-2 leading-relaxed">{{ entry.notes }}</p>
+
+          <div v-if="otherScores.length" class="mt-2 space-y-0.5">
+            <p v-for="s in otherScores" :key="s.id" class="text-xs text-gray-400">
+              <span class="font-medium text-gray-500">{{ s.user?.username }}</span>
+              · {{ t('card.desire') }} {{ s.desire_level }}/10<span v-if="s.rating"> · {{ t('card.rating') }} {{ s.rating }}/10</span>
+            </p>
+          </div>
+
           <p class="text-xs text-gray-400 mt-2">{{ t('card.addedAt') }} {{ formatDate(entry.created_at, dateLocale()) }}</p>
         </div>
         <div class="flex gap-3 shrink-0 pt-0.5">
           <button @click="startEdit" class="text-xs text-gray-400 hover:text-gray-800 transition-colors">{{ t('card.edit') }}</button>
-          <button @click="$emit('delete')" class="text-xs text-gray-400 hover:text-red-500 transition-colors">{{ t('card.delete') }}</button>
+          <button v-if="isOwner" @click="confirming = true" class="text-xs text-gray-400 hover:text-red-500 transition-colors">{{ t('card.delete') }}</button>
         </div>
       </div>
 
@@ -120,6 +128,15 @@
         </ul>
       </div>
     </template>
+
+    <ConfirmDialog
+      v-if="confirming"
+      :message="t('card.deleteConfirm')"
+      :confirm-label="t('card.delete')"
+      :cancel-label="t('card.cancel')"
+      @confirm="confirmDelete"
+      @cancel="confirming = false"
+    />
   </div>
 </template>
 
@@ -129,6 +146,7 @@ import { STATUSES, STATUS_COLORS, formatDate } from '../constants'
 import { useAuth } from '../composables/useAuth'
 import { useI18n } from '../composables/useI18n'
 import ImagePicker from './ImagePicker.vue'
+import ConfirmDialog from './ConfirmDialog.vue'
 
 const props = defineProps({
   entry: { type: Object, required: true },
@@ -143,8 +161,15 @@ const myScore = computed(() =>
   props.entry.scores?.find(s => s.user_id === currentUser.value?.id)
 )
 
+const otherScores = computed(() =>
+  (props.entry.scores || []).filter(s => s.user_id !== currentUser.value?.id)
+)
+
+const isOwner = computed(() => props.entry.user_id === currentUser.value?.id)
+
 const editing = ref(false)
 const expanded = ref(false)
+const confirming = ref(false)
 const titleInput = ref(null)
 const form = reactive({
   title: '', category_id: '', status: '', notes: '',
@@ -166,5 +191,10 @@ function startEdit() {
 function save() {
   emit('update', { ...form, rating: form.rating || null })
   editing.value = false
+}
+
+function confirmDelete() {
+  confirming.value = false
+  emit('delete')
 }
 </script>
