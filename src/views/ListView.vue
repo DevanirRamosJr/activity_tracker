@@ -1,42 +1,43 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-200 dark:bg-gray-900">
     <div class="max-w-2xl mx-auto px-4 py-8">
       <!-- Header -->
       <div class="flex items-center justify-between mb-2">
         <div>
-          <h1 class="text-2xl font-semibold text-gray-900 tracking-tight">BB - Tracker</h1>
-          <p class="text-sm text-gray-400 mt-0.5">
+          <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight">BB - Tracker</h1>
+          <p class="text-sm text-gray-400 dark:text-gray-500 mt-0.5">
             {{ entries.length }} {{ entries.length === 1 ? t('list.item') : t('list.items') }}
           </p>
         </div>
         <div class="flex items-center gap-2">
           <button
             @click="showAdd = true"
-            class="bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            class="bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-white transition-colors"
           >
             {{ t('header.add') }}
           </button>
           <button
             @click="router.push('/draw')"
-            class="text-sm text-gray-400 hover:text-gray-700 px-3 py-2 transition-colors"
+            class="text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-3 py-2 transition-colors"
           >
             {{ t('header.draw') }}
           </button>
           <button
             @click="showPassword = true"
-            class="text-sm text-gray-400 hover:text-gray-700 px-3 py-2 transition-colors"
+            class="text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-3 py-2 transition-colors"
           >
             {{ t('header.password') }}
           </button>
+          <ThemeToggle />
           <button
             @click="toggleLocale"
-            class="text-xs font-medium text-gray-400 hover:text-gray-700 px-2 py-1 border border-gray-200 rounded transition-colors"
+            class="text-xs font-medium text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded transition-colors"
           >
             {{ locale === 'pt-BR' ? 'EN' : 'PT' }}
           </button>
           <button
             @click="handleLogout"
-            class="text-sm text-gray-400 hover:text-gray-700 px-3 py-2 transition-colors"
+            class="text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-3 py-2 transition-colors"
           >
             {{ t('header.logout') }}
           </button>
@@ -47,12 +48,12 @@
       <div class="mt-4 mb-5 flex gap-2">
         <input
           v-model="search"
-          class="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400"
+          class="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500"
           :placeholder="t('list.searchPlaceholder')"
         />
         <select
           v-model="sortBy"
-          class="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none focus:border-gray-400"
+          class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-600 dark:text-gray-300 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500"
         >
           <option v-for="key in sortKeys" :key="key" :value="key">
             {{ t('sort.' + key) }}
@@ -69,12 +70,12 @@
       />
 
       <!-- Loading -->
-      <p v-if="loading" class="text-gray-400 text-sm py-8 text-center">{{ t('list.loading') }}</p>
+      <p v-if="loading" class="text-gray-400 dark:text-gray-500 text-sm py-8 text-center">{{ t('list.loading') }}</p>
 
       <!-- Empty state -->
-      <div v-else-if="filtered.length === 0" class="text-center py-16 text-gray-400">
+      <div v-else-if="filtered.length === 0" class="text-center py-16 text-gray-400 dark:text-gray-500">
         <p class="text-4xl mb-3">📋</p>
-        <p class="font-medium text-gray-500">{{ t('list.emptyTitle') }}</p>
+        <p class="font-medium text-gray-500 dark:text-gray-400">{{ t('list.emptyTitle') }}</p>
         <p class="text-sm mt-1">{{ t('list.emptyHint') }}</p>
       </div>
 
@@ -112,6 +113,7 @@ import { useAuth } from '../composables/useAuth'
 import { useEntries } from '../composables/useEntries'
 import { useCategories } from '../composables/useCategories'
 import { useI18n } from '../composables/useI18n'
+import ThemeToggle from '../components/ThemeToggle.vue'
 import CategoryFilter from '../components/CategoryFilter.vue'
 import EntryCard from '../components/EntryCard.vue'
 import AddModal from '../components/AddModal.vue'

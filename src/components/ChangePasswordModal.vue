@@ -3,8 +3,8 @@
     class="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50 overflow-y-auto"
     @click.self="$emit('close')"
   >
-    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl my-auto max-h-[calc(100vh-2rem)] overflow-y-auto">
-      <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('password.title') }}</h2>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md shadow-xl my-auto max-h-[calc(100vh-2rem)] overflow-y-auto">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ t('password.title') }}</h2>
 
       <form @submit.prevent="submit" class="space-y-3">
         <PasswordInput
@@ -31,7 +31,7 @@
           <button
             type="button"
             @click="$emit('close')"
-            class="text-sm text-gray-400 hover:text-gray-700 px-3 py-2 transition-colors"
+            class="text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-3 py-2 transition-colors"
           >
             {{ success ? t('password.close') : t('password.cancel') }}
           </button>
@@ -39,7 +39,7 @@
             v-if="!success"
             type="submit"
             :disabled="submitting"
-            class="text-sm bg-gray-900 text-white px-5 py-2 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-40"
+            class="text-sm bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 px-5 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-white transition-colors disabled:opacity-40"
           >
             {{ submitting ? t('password.saving') : t('password.save') }}
           </button>

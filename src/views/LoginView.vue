@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-    <div class="bg-white rounded-2xl border border-gray-200 p-8 w-full max-w-sm shadow-sm">
-      <h1 class="text-2xl font-semibold text-gray-900 tracking-tight text-center mb-1">BB - Tracker</h1>
-      <p class="text-sm text-gray-400 text-center mb-6">{{ t('login.subtitle') }}</p>
+  <div class="min-h-screen bg-gray-200 dark:bg-gray-900 flex items-center justify-center px-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 w-full max-w-sm shadow-sm">
+      <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight text-center mb-1">BB - Tracker</h1>
+      <p class="text-sm text-gray-400 dark:text-gray-500 text-center mb-6">{{ t('login.subtitle') }}</p>
 
       <div class="flex justify-center mb-6">
         <button
@@ -13,8 +13,8 @@
             'px-3 py-1 text-xs font-medium border transition-colors',
             l === 'pt-BR' ? 'rounded-l-lg' : 'rounded-r-lg',
             locale === l
-              ? 'bg-gray-900 text-white border-gray-900'
-              : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400',
+              ? 'bg-gray-900 text-white border-gray-900 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100'
+              : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 dark:hover:border-gray-500',
           ]"
         >
           {{ l === 'pt-BR' ? 'PT' : 'EN' }}
@@ -27,7 +27,7 @@
           type="text"
           :placeholder="t('login.username')"
           autocomplete="username"
-          class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400"
+          class="w-full border border-gray-200 dark:border-gray-700 dark:bg-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500"
         />
         <PasswordInput
           v-model="password"
@@ -40,7 +40,7 @@
         <button
           type="submit"
           :disabled="submitting"
-          class="w-full bg-gray-900 text-white text-sm font-medium py-2.5 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+          class="w-full bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 text-sm font-medium py-2.5 rounded-lg hover:bg-gray-700 dark:hover:bg-white transition-colors disabled:opacity-50"
         >
           {{ submitting ? t('login.submitting') : t('login.submit') }}
         </button>

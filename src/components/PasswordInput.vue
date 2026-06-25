@@ -6,7 +6,7 @@
       :value="modelValue"
       :placeholder="placeholder"
       :autocomplete="autocomplete"
-      class="w-full border border-gray-200 rounded-lg pl-3 pr-10 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400"
+      class="w-full border border-gray-200 dark:border-gray-700 dark:bg-gray-700 rounded-lg pl-3 pr-10 py-2.5 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500"
       @input="$emit('update:modelValue', $event.target.value)"
     />
     <button
