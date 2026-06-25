@@ -1,18 +1,21 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-200 dark:bg-gray-900">
     <div class="max-w-2xl mx-auto px-4 py-8">
       <!-- Header -->
       <div class="flex items-center justify-between mb-5">
-        <h1 class="text-2xl font-semibold text-gray-900 tracking-tight">{{ t('draw.title') }}</h1>
-        <button
-          @click="router.push('/')"
-          class="text-sm text-gray-400 hover:text-gray-700 px-3 py-2 transition-colors"
-        >
-          ← {{ t('draw.back') }}
-        </button>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight">{{ t('draw.title') }}</h1>
+        <div class="flex items-center gap-1">
+          <ThemeToggle />
+          <button
+            @click="router.push('/')"
+            class="text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-3 py-2 transition-colors"
+          >
+            ← {{ t('draw.back') }}
+          </button>
+        </div>
       </div>
 
-      <div class="bg-white rounded-xl border border-gray-200 p-4 space-y-5">
+      <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-5">
         <!-- Status filter -->
         <div>
           <p class="text-xs text-gray-400 mb-2">{{ t('draw.statuses') }}</p>
@@ -44,12 +47,12 @@
         </div>
 
         <!-- Desire weighting -->
-        <div class="border-t border-gray-100 pt-4">
-          <label class="flex items-center gap-2 text-sm text-gray-700">
+        <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
+          <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             <input type="checkbox" v-model="desire.enabled" class="rounded" />
             {{ t('draw.useDesire') }}
           </label>
-          <label v-if="desire.enabled" class="flex items-center gap-2 text-sm text-gray-500 mt-2 ml-6">
+          <label v-if="desire.enabled" class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-2 ml-6">
             <input type="checkbox" v-model="desire.invert" class="rounded" />
             {{ t('draw.invert') }}
           </label>
@@ -59,12 +62,12 @@
         </div>
 
         <!-- Date weighting -->
-        <div class="border-t border-gray-100 pt-4">
-          <label class="flex items-center gap-2 text-sm text-gray-700">
+        <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
+          <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             <input type="checkbox" v-model="date.enabled" class="rounded" />
             {{ t('draw.useDate') }}
           </label>
-          <label v-if="date.enabled" class="flex items-center gap-2 text-sm text-gray-500 mt-2 ml-6">
+          <label v-if="date.enabled" class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-2 ml-6">
             <input type="checkbox" v-model="date.invert" class="rounded" />
             {{ t('draw.invert') }}
           </label>
@@ -74,20 +77,20 @@
         </div>
 
         <!-- Show images on wheel -->
-        <div class="border-t border-gray-100 pt-4">
-          <label class="flex items-center gap-2 text-sm text-gray-700">
+        <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
+          <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             <input type="checkbox" v-model="showImages" class="rounded" />
             {{ t('draw.showImages') }}
           </label>
         </div>
 
         <!-- Draw button -->
-        <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
+        <div class="border-t border-gray-100 dark:border-gray-700 pt-4 flex items-center justify-between">
           <span class="text-xs text-gray-400">{{ eligibleCount }} {{ t('draw.eligible') }}</span>
           <button
             @click="doDraw"
             :disabled="eligibleCount === 0 || spinning"
-            class="bg-gray-900 text-white text-sm font-medium px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-30"
+            class="bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 text-sm font-medium px-6 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-white transition-colors disabled:opacity-30"
           >
             {{ result ? t('draw.again') : t('draw.button') }}
           </button>
@@ -107,15 +110,15 @@
       <!-- Result -->
       <div v-if="result" class="mt-6">
         <p class="text-xs text-gray-400 mb-2">{{ t('draw.result') }}</p>
-        <div class="bg-white rounded-xl border-2 border-gray-900 p-4 flex items-start gap-3">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-900 dark:border-gray-100 p-4 flex items-start gap-3">
           <img
             v-if="result.image_url"
             :src="result.image_url"
             alt=""
-            class="w-20 h-28 object-cover rounded-md border border-gray-200 shrink-0"
+            class="w-20 h-28 object-cover rounded-md border border-gray-200 dark:border-gray-700 shrink-0"
           />
           <div class="flex-1 min-w-0">
-            <p class="font-semibold text-gray-900 text-lg">{{ result.title }}</p>
+            <p class="font-semibold text-gray-900 dark:text-gray-100 text-lg">{{ result.title }}</p>
             <div class="flex flex-wrap gap-1.5 mt-2">
               <span
                 v-if="result.category"
@@ -130,7 +133,7 @@
                 {{ t('card.desire') }} {{ avgDesire(result) }}/10
               </span>
             </div>
-            <p v-if="result.notes" class="text-sm text-gray-500 mt-2 leading-relaxed">{{ result.notes }}</p>
+            <p v-if="result.notes" class="text-sm text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">{{ result.notes }}</p>
             <p class="text-xs text-gray-400 mt-2">{{ t('card.addedAt') }} {{ formatDate(result.created_at, dateLocale()) }}</p>
           </div>
         </div>
@@ -149,6 +152,7 @@ import { STATUSES, STATUS_COLORS, formatDate } from '../constants'
 import { getAvgScore } from '../lib/entryUtils'
 import { computeWeights, drawEntry, wheelSegments } from '../lib/draw'
 import DrawWheel from '../components/DrawWheel.vue'
+import ThemeToggle from '../components/ThemeToggle.vue'
 
 const router = useRouter()
 const { entries, fetchEntries } = useEntries()
@@ -187,7 +191,7 @@ function toggle(list, value) {
 function chipClass(active, colorClasses) {
   return [
     'px-3 py-1 rounded-full text-sm font-medium transition-colors border',
-    active ? `${colorClasses} border-current` : 'bg-white text-gray-400 border-gray-200 hover:border-gray-400',
+    active ? `${colorClasses} border-current` : 'bg-white text-gray-400 border-gray-200 hover:border-gray-400 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 dark:hover:border-gray-500',
   ]
 }
 

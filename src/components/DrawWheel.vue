@@ -2,8 +2,8 @@
   <div class="relative mx-auto" style="width: 100%; max-width: 320px; aspect-ratio: 1;">
     <!-- Pointer -->
     <div
-      class="absolute left-1/2 -translate-x-1/2 z-10"
-      style="top: -2px; width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; border-top: 18px solid #111827;"
+      class="absolute left-1/2 -translate-x-1/2 z-10 text-gray-900 dark:text-gray-100"
+      style="top: -2px; width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; border-top: 18px solid;"
     ></div>
 
     <!-- Circular clip so the rotating square's corners never overflow the page -->

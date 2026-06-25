@@ -5,8 +5,8 @@
       :class="[
         'px-3 py-1 rounded-full text-sm font-medium transition-colors border',
         allSelected
-          ? 'bg-gray-900 text-white border-gray-900'
-          : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400',
+          ? 'bg-gray-900 text-white border-gray-900 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100'
+          : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 dark:hover:border-gray-500',
       ]"
     >
       {{ t('list.all') }}
@@ -25,7 +25,7 @@
         'px-3 py-1 rounded-full text-sm font-medium transition-colors border',
         modelValue.includes(cat.name)
           ? [cat.color_bg, cat.color_text, 'border-current']
-          : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400',
+          : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 dark:hover:border-gray-500',
       ]"
     >
       {{ cat.name }}

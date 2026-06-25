@@ -4,11 +4,11 @@
 
     <!-- Current selection -->
     <div v-if="modelValue" class="relative inline-block">
-      <img :src="modelValue" alt="" class="h-28 rounded-lg border border-gray-200 object-cover" />
+      <img :src="modelValue" alt="" class="h-28 rounded-lg border border-gray-200 dark:border-gray-700 object-cover" />
       <button
         type="button"
         :aria-label="t('image.remove')"
-        class="absolute -top-2 -right-2 bg-white border border-gray-200 rounded-full w-6 h-6 leading-none text-gray-500 hover:text-red-500 shadow-sm"
+        class="absolute -top-2 -right-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full w-6 h-6 leading-none text-gray-500 dark:text-gray-300 hover:text-red-500 shadow-sm"
         @click="$emit('update:modelValue', '')"
       >
         ×
@@ -20,7 +20,7 @@
       <input
         v-model="query"
         :placeholder="t('image.searchPlaceholder')"
-        class="w-full sm:flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+        class="w-full sm:flex-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400 dark:focus:border-gray-500"
         @input="userEditedQuery = true"
         @keydown.enter.prevent="search"
       />
@@ -28,12 +28,12 @@
         <button
           type="button"
           :disabled="searching || !query.trim()"
-          class="flex-1 sm:flex-none text-sm bg-gray-900 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-40"
+          class="flex-1 sm:flex-none text-sm bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-white transition-colors disabled:opacity-40"
           @click="search"
         >
           {{ searching ? '…' : t('image.search') }}
         </button>
-        <label class="flex-1 sm:flex-none text-center text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:border-gray-400 transition-colors whitespace-nowrap">
+        <label class="flex-1 sm:flex-none text-center text-sm text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors whitespace-nowrap">
           {{ uploading ? t('image.uploading') : t('image.upload') }}
           <input type="file" accept="image/*" class="hidden" @change="onUpload" />
         </label>
