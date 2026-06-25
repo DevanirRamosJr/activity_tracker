@@ -56,6 +56,7 @@ export default {
   card: {
     edit: 'Editar',
     delete: 'Excluir',
+    deleteConfirm: 'Excluir este item?',
     save: 'Salvar',
     cancel: 'Cancelar',
     addedAt: 'Adicionado em',

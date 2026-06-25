@@ -26,6 +26,7 @@ const category = {
 function makeEntry(overrides = {}) {
   return {
     id: 'e1',
+    user_id: 'user-a',
     title: 'Inception',
     category,
     status: 'Done',
@@ -60,6 +61,19 @@ describe('EntryCard', () => {
     expect(text).toContain('Nota 9/10')
   })
 
+  it("shows other users' scores with their username", () => {
+    const entry = makeEntry({
+      scores: [
+        { id: 's1', user_id: 'user-a', desire_level: 7, rating: 9 },
+        { id: 's2', user_id: 'user-b', desire_level: 4, rating: 6, user: { username: 'bob' } },
+      ],
+    })
+    const text = factory(entry).text()
+    expect(text).toContain('bob')
+    expect(text).toContain('Vontade 4/10')
+    expect(text).toContain('Nota 6/10')
+  })
+
   it('renders the poster when image_url is set', () => {
     const wrapper = factory(makeEntry({ image_url: 'https://img/poster.jpg' }))
     expect(wrapper.find('img').attributes('src')).toBe('https://img/poster.jpg')
@@ -72,10 +86,33 @@ describe('EntryCard', () => {
     expect(text).not.toContain('Nota')
   })
 
-  it('emits delete when the Delete button is clicked', async () => {
+  it('confirms before emitting delete', async () => {
     const wrapper = factory()
     await buttonByText(wrapper, 'Excluir').trigger('click')
+
+    // No delete yet — a confirmation dialog appears first.
+    expect(wrapper.emitted('delete')).toBeFalsy()
+    expect(wrapper.text()).toContain('Excluir este item?')
+
+    // Confirm via the dialog's button (the last "Excluir").
+    const deleteButtons = wrapper.findAll('button').filter(b => b.text() === 'Excluir')
+    await deleteButtons[deleteButtons.length - 1].trigger('click')
     expect(wrapper.emitted('delete')).toHaveLength(1)
+  })
+
+  it('hides the delete button for entries created by another user', () => {
+    const wrapper = factory(makeEntry({ user_id: 'user-b' }))
+    expect(wrapper.findAll('button').some(b => b.text() === 'Excluir')).toBe(false)
+    // Edit is still available to everyone.
+    expect(wrapper.findAll('button').some(b => b.text() === 'Editar')).toBe(true)
+  })
+
+  it('does not delete when the confirmation is cancelled', async () => {
+    const wrapper = factory()
+    await buttonByText(wrapper, 'Excluir').trigger('click')
+    await buttonByText(wrapper, 'Cancelar').trigger('click')
+    expect(wrapper.emitted('delete')).toBeFalsy()
+    expect(wrapper.text()).not.toContain('Excluir este item?')
   })
 
   it('enters edit mode pre-filled and emits update on save', async () => {

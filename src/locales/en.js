@@ -56,6 +56,7 @@ export default {
   card: {
     edit: 'Edit',
     delete: 'Delete',
+    deleteConfirm: 'Delete this entry?',
     save: 'Save',
     cancel: 'Cancel',
     addedAt: 'Added',
