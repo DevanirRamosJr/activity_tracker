@@ -17,6 +17,12 @@
             {{ t('header.add') }}
           </button>
           <button
+            @click="router.push('/draw')"
+            class="text-sm text-gray-400 hover:text-gray-700 px-3 py-2 transition-colors"
+          >
+            {{ t('header.draw') }}
+          </button>
+          <button
             @click="showPassword = true"
             class="text-sm text-gray-400 hover:text-gray-700 px-3 py-2 transition-colors"
           >
