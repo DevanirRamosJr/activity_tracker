@@ -7,6 +7,12 @@
         <div class="flex items-center gap-1">
           <ThemeToggle />
           <button
+            @click="toggleLocale"
+            class="text-xs font-medium text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded transition-colors"
+          >
+            {{ locale === 'pt-BR' ? 'EN' : 'PT' }}
+          </button>
+          <button
             @click="router.push('/')"
             class="text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-3 py-2 transition-colors"
           >
@@ -151,15 +157,20 @@ import { useI18n } from '../composables/useI18n'
 import { STATUSES, STATUS_COLORS, formatDate } from '../constants'
 import { getAvgScore } from '../lib/entryUtils'
 import { computeWeights, drawEntry, wheelSegments } from '../lib/draw'
+import confetti from 'canvas-confetti'
 import DrawWheel from '../components/DrawWheel.vue'
 import ThemeToggle from '../components/ThemeToggle.vue'
 
 const router = useRouter()
 const { entries, fetchEntries } = useEntries()
 const { categories, fetchCategories } = useCategories()
-const { t, dateLocale } = useI18n()
+const { locale, t, setLocale, dateLocale } = useI18n()
 
-const selectedStatuses = ref([...STATUSES])
+function toggleLocale() {
+  setLocale(locale.value === 'pt-BR' ? 'en' : 'pt-BR')
+}
+
+const selectedStatuses = ref(STATUSES.filter(s => s !== 'Done'))
 const selectedCategories = ref([])
 const desire = reactive({ enabled: false, invert: false })
 const date = reactive({ enabled: false, invert: false })
@@ -217,6 +228,14 @@ async function doDraw() {
 function onWheelDone() {
   result.value = pendingWinner
   spinning.value = false
+  celebrate()
+}
+
+function celebrate() {
+  const base = { particleCount: 80, spread: 65, startVelocity: 45, ticks: 200, zIndex: 60 }
+  confetti({ ...base, origin: { x: 0.15, y: 0.6 }, angle: 60 })
+  confetti({ ...base, origin: { x: 0.85, y: 0.6 }, angle: 120 })
+  confetti({ ...base, particleCount: 120, spread: 100, origin: { x: 0.5, y: 0.5 } })
 }
 
 onMounted(async () => {
