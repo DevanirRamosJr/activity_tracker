@@ -10,8 +10,20 @@ export default {
   header: {
     add: '+ Novo',
     draw: 'Sortear',
-    password: 'Senha',
+    password: 'Trocar senha',
     logout: 'Sair',
+  },
+  status: {
+    'Want to': 'Quero ver',
+    'In Progress': 'Em progresso',
+    Done: 'Concluído',
+  },
+  categories: {
+    Movie: 'Filme',
+    Series: 'Série',
+    Anime: 'Anime',
+    Cartoon: 'Desenho',
+    Game: 'Jogo',
   },
   draw: {
     title: 'Sortear um item',

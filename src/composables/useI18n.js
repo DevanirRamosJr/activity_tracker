@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import en from '../locales/en'
 import ptBR from '../locales/pt-BR'
+import { translateStatus, translateCategory } from '../lib/i18nLabels'
 
 const LOCALES = { en, 'pt-BR': ptBR }
 const locale = ref(localStorage.getItem('locale') || 'pt-BR')
@@ -15,6 +16,16 @@ export function useI18n() {
     return val ?? key
   }
 
+  // Translate a DB/constant value (status string, category name) for display,
+  // falling back to the raw value when there's no translation.
+  function tStatus(value) {
+    return translateStatus(LOCALES[locale.value], value)
+  }
+
+  function tCategory(value) {
+    return translateCategory(LOCALES[locale.value], value)
+  }
+
   function setLocale(l) {
     locale.value = l
     localStorage.setItem('locale', l)
@@ -24,5 +35,5 @@ export function useI18n() {
     return locale.value === 'pt-BR' ? 'pt-BR' : 'en-US'
   }
 
-  return { locale, t, setLocale, dateLocale }
+  return { locale, t, tStatus, tCategory, setLocale, dateLocale }
 }

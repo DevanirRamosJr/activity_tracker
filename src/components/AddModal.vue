@@ -18,13 +18,13 @@
             v-model="form.category_id"
             class="flex-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400 dark:focus:border-gray-500"
           >
-            <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
+            <option v-for="c in categories" :key="c.id" :value="c.id">{{ tCategory(c.name) }}</option>
           </select>
           <select
             v-model="form.status"
             class="flex-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400 dark:focus:border-gray-500"
           >
-            <option v-for="s in STATUSES" :key="s">{{ s }}</option>
+            <option v-for="s in STATUSES" :key="s" :value="s">{{ tStatus(s) }}</option>
           </select>
         </div>
         <div class="flex gap-2">
@@ -82,7 +82,7 @@ const props = defineProps({
   categories: { type: Array, required: true },
 })
 const emit = defineEmits(['close', 'add'])
-const { t } = useI18n()
+const { t, tStatus, tCategory } = useI18n()
 
 const titleInput = ref(null)
 const submitting = ref(false)
