@@ -2,9 +2,11 @@
   <div class="min-h-screen bg-gray-200 dark:bg-gray-900">
     <div class="max-w-2xl mx-auto px-4 py-8">
       <!-- Header -->
-      <div class="flex items-center justify-between mb-5">
+      <div class="flex items-start justify-between gap-3 mb-5">
         <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight">{{ t('draw.title') }}</h1>
-        <div class="flex items-center gap-1">
+
+        <!-- Desktop controls -->
+        <div class="hidden sm:flex items-center gap-1">
           <ThemeToggle />
           <button
             @click="toggleLocale"
@@ -19,7 +21,49 @@
             ← {{ t('draw.back') }}
           </button>
         </div>
+
+        <!-- Mobile menu -->
+        <div class="sm:hidden relative z-30">
+          <button
+            @click="menuOpen = !menuOpen"
+            :aria-expanded="menuOpen"
+            aria-label="Menu"
+            class="p-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+          >
+            <Transition name="menu-icon" mode="out-in">
+              <svg v-if="!menuOpen" key="bars" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+              <svg v-else key="close" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </Transition>
+          </button>
+
+          <Transition name="menu">
+            <div
+              v-if="menuOpen"
+              class="absolute right-0 mt-2 w-40 origin-top-right bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2 flex flex-col gap-0.5"
+            >
+              <button @click="router.push('/')" :class="menuItem">← {{ t('draw.back') }}</button>
+              <div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-700 mt-1 pt-1 px-1">
+                <ThemeToggle />
+                <button
+                  @click="toggleLocale"
+                  class="text-xs font-medium text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded transition-colors"
+                >
+                  {{ locale === 'pt-BR' ? 'EN' : 'PT' }}
+                </button>
+              </div>
+            </div>
+          </Transition>
+        </div>
       </div>
+
+      <!-- Mobile menu backdrop -->
+      <Transition name="fade">
+        <div v-if="menuOpen" @click="menuOpen = false" class="fixed inset-0 z-20 sm:hidden"></div>
+      </Transition>
 
       <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-5">
         <!-- Status filter -->
@@ -32,7 +76,7 @@
               @click="toggle(selectedStatuses, s)"
               :class="chipClass(selectedStatuses.includes(s), STATUS_COLORS[s])"
             >
-              {{ s }}
+              {{ tStatus(s) }}
             </button>
           </div>
         </div>
@@ -47,7 +91,7 @@
               @click="toggle(selectedCategories, c.name)"
               :class="chipClass(selectedCategories.includes(c.name), c.color_bg + ' ' + c.color_text)"
             >
-              {{ c.name }}
+              {{ tCategory(c.name) }}
             </button>
           </div>
         </div>
@@ -130,10 +174,10 @@
                 v-if="result.category"
                 :class="['text-xs px-2 py-0.5 rounded-full font-medium', result.category.color_bg, result.category.color_text]"
               >
-                {{ result.category.name }}
+                {{ tCategory(result.category.name) }}
               </span>
               <span :class="['text-xs px-2 py-0.5 rounded-full font-medium', STATUS_COLORS[result.status]]">
-                {{ result.status }}
+                {{ tStatus(result.status) }}
               </span>
               <span v-if="avgDesire(result)" class="text-xs px-2 py-0.5 rounded-full font-medium bg-red-50 text-red-600">
                 {{ t('card.desire') }} {{ avgDesire(result) }}/10
@@ -164,11 +208,14 @@ import ThemeToggle from '../components/ThemeToggle.vue'
 const router = useRouter()
 const { entries, fetchEntries } = useEntries()
 const { categories, fetchCategories } = useCategories()
-const { locale, t, setLocale, dateLocale } = useI18n()
+const { locale, t, tStatus, tCategory, setLocale, dateLocale } = useI18n()
 
 function toggleLocale() {
   setLocale(locale.value === 'pt-BR' ? 'en' : 'pt-BR')
 }
+
+const menuOpen = ref(false)
+const menuItem = 'w-full text-left text-sm px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
 
 const selectedStatuses = ref(STATUSES.filter(s => s !== 'Done'))
 const selectedCategories = ref([])
@@ -244,3 +291,37 @@ onMounted(async () => {
   if (!entries.value.length) await fetchEntries()
 })
 </script>
+
+<style scoped>
+.menu-enter-active,
+.menu-leave-active {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.menu-enter-from,
+.menu-leave-to {
+  opacity: 0;
+  transform: scale(0.95) translateY(-6px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.18s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.menu-icon-enter-active,
+.menu-icon-leave-active {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.menu-icon-enter-from {
+  opacity: 0;
+  transform: rotate(-90deg);
+}
+.menu-icon-leave-to {
+  opacity: 0;
+  transform: rotate(90deg);
+}
+</style>

@@ -10,8 +10,20 @@ export default {
   header: {
     add: '+ Add',
     draw: 'Draw',
-    password: 'Password',
+    password: 'Change password',
     logout: 'Logout',
+  },
+  status: {
+    'Want to': 'Want to',
+    'In Progress': 'In Progress',
+    Done: 'Done',
+  },
+  categories: {
+    Movie: 'Movie',
+    Series: 'Series',
+    Anime: 'Anime',
+    Cartoon: 'Cartoon',
+    Game: 'Game',
   },
   draw: {
     title: 'Draw an entry',

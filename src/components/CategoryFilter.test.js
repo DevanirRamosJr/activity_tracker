@@ -5,7 +5,7 @@ vi.mock('../composables/useI18n', async () => {
   function t(key) {
     return key.split('.').reduce((o, k) => o?.[k], ptBR) ?? key
   }
-  return { useI18n: () => ({ t, locale: { value: 'pt-BR' }, setLocale: vi.fn(), dateLocale: () => 'pt-BR' }) }
+  return { useI18n: () => ({ t, tStatus: (v) => v, tCategory: (v) => v, locale: { value: 'pt-BR' }, setLocale: vi.fn(), dateLocale: () => 'pt-BR' }) }
 })
 import { mount } from '@vue/test-utils'
 import CategoryFilter from './CategoryFilter.vue'

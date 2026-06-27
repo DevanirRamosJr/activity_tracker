@@ -10,7 +10,7 @@ vi.mock('../composables/useAuth', async () => {
 vi.mock('../composables/useI18n', async () => {
   const ptBR = (await import('../locales/pt-BR')).default
   function t(key) { return key.split('.').reduce((o, k) => o?.[k], ptBR) ?? key }
-  return { useI18n: () => ({ t, locale: { value: 'pt-BR' }, setLocale: vi.fn(), dateLocale: () => 'pt-BR' }) }
+  return { useI18n: () => ({ t, tStatus: (v) => v, tCategory: (v) => v, locale: { value: 'pt-BR' }, setLocale: vi.fn(), dateLocale: () => 'pt-BR' }) }
 })
 
 // The ImagePicker child pulls in network/storage modules; stub them out here.
