@@ -14,6 +14,27 @@
       if (t === 'dark') document.documentElement.classList.add('dark')
     } catch (e) {}
   </script>
+  <script>
+    // If the app never mounts — e.g. a privacy/ad-blocking extension blocks
+    // storage or scripts and the JS throws before Vue renders — show a readable
+    // message instead of a silent blank page. Registered before the module so it
+    // can catch import-time errors too. Guarded so it never clobbers a mounted app.
+    window.__showAppError = function () {
+      var el = document.getElementById('app')
+      if (!el || el.children.length) return
+      el.innerHTML =
+        '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:Inter,\'Segoe UI\',sans-serif;background:#e5e7eb;">' +
+        '<div style="max-width:420px;text-align:center;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,.1);">' +
+        '<p style="font-size:18px;font-weight:600;color:#111827;margin:0 0 8px;">BB - Tracker couldn\'t load</p>' +
+        '<p style="font-size:14px;color:#6b7280;margin:0 0 6px;line-height:1.5;">A browser extension may be blocking site storage or scripts. Try reloading, or disable privacy / ad-blocking extensions for this site.</p>' +
+        '<p style="font-size:13px;color:#9ca3af;margin:0 0 18px;line-height:1.5;">Uma extensão do navegador pode estar bloqueando o site. Tente recarregar ou desativar extensões de privacidade para este site.</p>' +
+        '<button onclick="location.reload()" style="font-size:14px;font-weight:500;color:#fff;background:#111827;border:none;border-radius:8px;padding:9px 20px;cursor:pointer;">Reload / Recarregar</button>' +
+        '</div></div>'
+    }
+    window.addEventListener('error', window.__showAppError)
+    window.addEventListener('unhandledrejection', window.__showAppError)
+    window.addEventListener('load', function () { setTimeout(window.__showAppError, 2500) })
+  </script>
 </head>
 <body>
   <div id="app"></div>

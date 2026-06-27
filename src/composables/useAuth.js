@@ -1,11 +1,12 @@
 import { ref } from 'vue'
 import { supabase, setAccessToken } from '../lib/supabase'
+import { getItem, getJSON, setItem, removeItem } from '../lib/safeStorage'
 
-const currentUser = ref(JSON.parse(localStorage.getItem('currentUser') || 'null'))
+const currentUser = ref(getJSON('currentUser', null))
 const isAuthenticated = ref(!!currentUser.value)
 
 // Restore the JWT from localStorage on page load.
-const savedToken = localStorage.getItem('authToken')
+const savedToken = getItem('authToken')
 if (savedToken) setAccessToken(savedToken)
 
 export function useAuth() {
@@ -19,8 +20,8 @@ export function useAuth() {
     setAccessToken(data.token)
     currentUser.value = data.user
     isAuthenticated.value = true
-    localStorage.setItem('currentUser', JSON.stringify(data.user))
-    localStorage.setItem('authToken', data.token)
+    setItem('currentUser', JSON.stringify(data.user))
+    setItem('authToken', data.token)
     return true
   }
 
@@ -28,8 +29,8 @@ export function useAuth() {
     setAccessToken(null)
     currentUser.value = null
     isAuthenticated.value = false
-    localStorage.removeItem('currentUser')
-    localStorage.removeItem('authToken')
+    removeItem('currentUser')
+    removeItem('authToken')
   }
 
   async function changePassword(currentPassword, newPassword) {

@@ -1,9 +1,10 @@
 import { ref } from 'vue'
 import en from '../locales/en'
 import ptBR from '../locales/pt-BR'
+import { getItem, setItem } from '../lib/safeStorage'
 
 const LOCALES = { en, 'pt-BR': ptBR }
-const locale = ref(localStorage.getItem('locale') || 'pt-BR')
+const locale = ref(getItem('locale') || 'pt-BR')
 
 export function useI18n() {
   function t(key) {
@@ -17,7 +18,7 @@ export function useI18n() {
 
   function setLocale(l) {
     locale.value = l
-    localStorage.setItem('locale', l)
+    setItem('locale', l)
   }
 
   function dateLocale() {
