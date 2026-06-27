@@ -1,7 +1,8 @@
 import { ref } from 'vue'
+import { getItem, setItem } from '../lib/safeStorage'
 
 function initialTheme() {
-  const saved = localStorage.getItem('theme')
+  const saved = getItem('theme')
   if (saved) return saved
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
@@ -16,7 +17,7 @@ function apply() {
 export function useTheme() {
   function toggle() {
     theme.value = theme.value === 'dark' ? 'light' : 'dark'
-    localStorage.setItem('theme', theme.value)
+    setItem('theme', theme.value)
     apply()
   }
 
