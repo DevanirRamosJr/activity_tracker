@@ -28,7 +28,7 @@
           : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 dark:hover:border-gray-500',
       ]"
     >
-      {{ cat.name }}
+      {{ tCategory(cat.name) }}
       <span
         v-if="counts[cat.name] > 0"
         class="ml-1.5 text-xs opacity-60"
@@ -43,7 +43,7 @@
 import { computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
 
-const { t } = useI18n()
+const { t, tCategory } = useI18n()
 
 const props = defineProps({
   modelValue: { type: Array, required: true },
